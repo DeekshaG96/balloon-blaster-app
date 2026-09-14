@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Arrow Pop: Master Archer - Balloon Blaster Deluxe</title>
+    <meta name="description" content="An exciting bow & arrow balloon blaster arcade game featuring realistic bow physics, parabolic trajectories, bomb reactions, freeze stasis, and combo multipliers." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Main Canvas Container -->
+      <div id="canvas-container">
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+        <!-- Fire Rush Screen Vignette Effect -->
+        <div id="fire-rush-vignette"></div>
+
+        <!-- Glassmorphic HUD Overlay -->
+        <div id="hud-overlay">
+          <div class="hud-top">
+            <!-- Arrows Counter -->
+            <div class="hud-pill" id="arrows-pill">
+              <span class="hud-label">Arrows</span>
+              <span class="hud-val arrows" id="hud-arrows">10</span>
+            </div>
+
+            <!-- Score Display -->
+            <div class="hud-pill">
+              <span class="hud-label">Score</span>
+              <span class="hud-val gold" id="hud-score">0</span>
+            </div>
+
+            <!-- Coins Balance -->
+            <div class="hud-pill">
+              <span class="hud-label">Coins</span>
+              <span class="hud-val gold" style="display: flex; align-items: center; gap: 4px;">
+                <span>🪙</span><span id="hud-coins">0</span>
+              </span>
+            </div>
+
+            <!-- Level / Mode Badge -->
+            <div class="hud-pill">
+              <span class="hud-label" id="hud-mode-label">Level</span>
+              <span class="hud-val" id="hud-level">1</span>
+            </div>
+
+            <!-- Wind Gauge -->
+            <div class="hud-pill wind-box" id="wind-pill">
+              <span class="hud-label">Wind</span>
+              <span class="wind-arrow" id="wind-arrow">➔</span>
+              <span class="hud-val" id="wind-speed" style="font-size: 15px;">0 mph</span>
+            </div>
+
+            <!-- Fire Rush Gauge -->
+            <div class="hud-pill fire-gauge-pill" id="fire-gauge-pill" title="Fill combo streak to enter FIRE RUSH!">
+              <span class="fire-icon">🔥</span>
+              <div class="fire-bar-track">
+                <div class="fire-bar-fill" id="fire-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Utility Controls -->
+            <div style="display: flex; gap: 8px;">
+              <button class="hud-btn" id="btn-open-armory-hud" title="Bow Armory">🏹</button>
+              <button class="hud-btn" id="btn-open-achievements-hud" title="Achievements">🏆</button>
+              <button class="hud-btn" id="btn-sound" title="Toggle Sound">🔊</button>
+              <button class="hud-btn" id="btn-pause" title="Pause Game">⏸</button>
+            </div>
+          </div>
+
+          <!-- Active Combo Streak Banner -->
+          <div id="combo-display">
+            COMBO x<span id="combo-multiplier">2</span>!
+          </div>
+
+          <!-- Active Powerup Badge -->
+          <div id="powerup-badge">
+            <span id="powerup-icon">🔥</span>
+            <span id="powerup-name">Fire Arrows</span>
+            (<span id="powerup-timer">3</span> shots)
+          </div>
+
+          <!-- Aim Helper Toast -->
+          <div id="aim-help-toast">
+            <span>🎯</span> Drag back from bow to pull & aim, release to shoot!
+          </div>
+
+          <!-- Real-Time Achievement Unlock Toast -->
+          <div id="achievement-toast" class="achievement-toast hidden">
+            <div class="ach-toast-icon" id="ach-toast-icon">🏆</div>
+            <div class="ach-toast-body">
+              <div class="ach-toast-header">ACHIEVEMENT UNLOCKED!</div>
+              <div class="ach-toast-title" id="ach-toast-title">First Target</div>
+              <div class="ach-toast-reward">+<span id="ach-toast-coins">50</span> Coins 🪙</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. Main Menu Modal -->
+        <div class="modal-overlay" id="menu-modal">
+          <div class="glass-modal">
+            <h1 class="modal-title">🏹 ARROW POP</h1>
+            <p class="modal-subtitle">Master Archer &bull; Balloon Blaster Deluxe</p>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-label">Endless Record</span>
+                <span class="stat-num highlight" id="menu-highscore">0</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Highest Level</span>
+                <span class="stat-num" id="menu-unlocked-level">1 / 10</span>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn-primary" id="btn-start-campaign">
+                <span>🎯</span> Play Levels
+              </button>
+              <button class="btn-primary" id="btn-start-endless" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">
+                <span>⚡</span> Endless Blitz
+              </button>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" id="btn-open-levels" style="flex: 1;">
+                  <span>🗺️</span> Levels
+                </button>
+                <button class="btn-secondary" id="btn-open-armory" style="flex: 1;">
+                  <span>🏹</span> Armory
+                </button>
+                <button class="btn-secondary" id="btn-open-achievements" style="flex: 1;">
+                  <span>🏆</span> Trophies
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Armory Modal (Bow Skins & Upgrades) -->
+        <div class="modal-overlay hidden" id="armory-modal">
+          <div class="glass-modal armory-modal-card">
+            <h2 class="modal-title">🏹 THE ARMORY</h2>
+            <p class="modal-subtitle">Equip forged bows with unique stats and trails</p>
+            <div class="armory-coins-pill">
+              <span>Your Coins: 🪙 </span><strong id="armory-coins-display">0</strong>
+            </div>
+
+            <div class="armory-grid" id="armory-bows-container">
+              <!-- Dynamically populated -->
+            </div>
+
+            <button class="btn-secondary" id="btn-close-armory" style="width: 100%; margin-top: 16px;">
+              Close Armory
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Achievements Modal -->
+        <div class="modal-overlay hidden" id="achievements-modal">
+          <div class="glass-modal achievements-modal-card">
+            <h2 class="modal-title">🏆 ACHIEVEMENTS</h2>
+            <p class="modal-subtitle">Master archery feats to claim coin bounties</p>
+
+            <div class="achievements-list" id="achievements-container">
+              <!-- Dynamically populated -->
+            </div>
+
+            <button class="btn-secondary" id="btn-close-achievements" style="width: 100%; margin-top: 16px;">
+              Back
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Level Clear Modal -->
+        <div class="modal-overlay hidden" id="level-clear-modal">
+          <div class="glass-modal">
+            <h2 class="modal-title">🎉 LEVEL COMPLETE!</h2>
+            <p class="modal-subtitle" id="clear-level-name">Carnival Warmup</p>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-label">Balloons Popped</span>
+                <span class="stat-num" id="clear-pops">10</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Coins Earned</span>
+                <span class="stat-num highlight">+<span id="clear-coins">50</span> 🪙</span>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn-primary" id="btn-next-level">Next Level ➔</button>
+              <button class="btn-secondary" id="btn-clear-menu">Main Menu</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Game Over Modal -->
+        <div class="modal-overlay hidden" id="game-over-modal">
+          <div class="glass-modal">
+            <h2 class="modal-title" style="background: linear-gradient(135deg, #f43f5e, #fb7185); -webkit-background-clip: text;">🏹 OUT OF ARROWS</h2>
+            <p class="modal-subtitle" id="game-over-reason">Good attempt! Try again for a higher score.</p>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-label">Final Score</span>
+                <span class="stat-num highlight" id="game-over-score">0</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Best Combo</span>
+                <span class="stat-num" id="game-over-combo">x1</span>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn-primary" id="btn-retry">🔄 Try Again</button>
+              <button class="btn-secondary" id="btn-game-over-menu">Main Menu</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Level Select Modal -->
+        <div class="modal-overlay hidden" id="level-select-modal">
+          <div class="glass-modal">
+            <h2 class="modal-title">SELECT LEVEL</h2>
+            <p class="modal-subtitle">Choose an unlocked challenge stage</p>
+
+            <div class="level-grid" id="level-buttons-container">
+              <!-- Dynamically populated with 10 level buttons -->
+            </div>
+
+            <button class="btn-secondary" id="btn-close-levels" style="width: 100%;">Back to Menu</button>
+          </div>
+        </div>
+
+        <!-- 7. Pause Modal -->
+        <div class="modal-overlay hidden" id="pause-modal">
+          <div class="glass-modal">
+            <h2 class="modal-title">GAME PAUSED</h2>
+            <p class="modal-subtitle">Take a breather, archer!</p>
+
+            <div class="btn-group">
+              <button class="btn-primary" id="btn-resume">▶ Resume</button>
+              <button class="btn-secondary" id="btn-pause-restart">🔄 Restart Stage</button>
+              <button class="btn-secondary" id="btn-pause-menu">Main Menu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
