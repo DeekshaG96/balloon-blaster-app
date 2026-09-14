@@ -159,6 +159,11 @@ class GameApp {
     document.getElementById('btn-open-achievements-hud').addEventListener('click', () => this.showAchievements());
     document.getElementById('btn-close-achievements').addEventListener('click', () => this.hideAchievements());
 
+    // About
+    document.getElementById('btn-open-about').addEventListener('click', () => this.showAbout());
+    document.getElementById('btn-open-about-hud').addEventListener('click', () => this.showAbout());
+    document.getElementById('btn-close-about').addEventListener('click', () => this.hideAbout());
+
     // Campaign progression
     document.getElementById('btn-next-level').addEventListener('click', () => {
       this.startCampaign(this.currentLevelNum + 1);
@@ -306,6 +311,16 @@ class GameApp {
 
   hideAchievements() {
     document.getElementById('achievements-modal').classList.add('hidden');
+  }
+
+  showAbout() {
+    const wasPlaying = this.state === STATE.PLAYING;
+    if (wasPlaying) this.state = STATE.PAUSED;
+    document.getElementById('about-modal').classList.remove('hidden');
+  }
+
+  hideAbout() {
+    document.getElementById('about-modal').classList.add('hidden');
   }
 
   updateMenuStats() {

@@ -67,6 +67,7 @@
             <div style="display: flex; gap: 8px;">
               <button class="hud-btn" id="btn-open-armory-hud" title="Bow Armory">🏹</button>
               <button class="hud-btn" id="btn-open-achievements-hud" title="Achievements">🏆</button>
+              <button class="hud-btn" id="btn-open-about-hud" title="About & Help">ℹ️</button>
               <button class="hud-btn" id="btn-sound" title="Toggle Sound">🔊</button>
               <button class="hud-btn" id="btn-pause" title="Pause Game">⏸</button>
             </div>
@@ -124,7 +125,7 @@
               <button class="btn-primary" id="btn-start-endless" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">
                 <span>⚡</span> Endless Blitz
               </button>
-              <div style="display: flex; gap: 10px;">
+              <div style="display: flex; gap: 8px;">
                 <button class="btn-secondary" id="btn-open-levels" style="flex: 1;">
                   <span>🗺️</span> Levels
                 </button>
@@ -134,8 +135,51 @@
                 <button class="btn-secondary" id="btn-open-achievements" style="flex: 1;">
                   <span>🏆</span> Trophies
                 </button>
+                <button class="btn-secondary" id="btn-open-about" style="flex: 1;">
+                  <span>ℹ️</span> About
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- 1B. About Modal -->
+        <div class="modal-overlay hidden" id="about-modal">
+          <div class="glass-modal about-modal-card">
+            <h2 class="modal-title">ℹ️ ABOUT ARROW POP</h2>
+            <p class="modal-subtitle">Master Archer &bull; Balloon Blaster Deluxe</p>
+
+            <div class="about-content">
+              <div class="about-box">
+                <h4>🎯 How To Play</h4>
+                <p>Click/touch and drag backwards from the bow to aim and adjust pull tension. Release to fire your arrow. Pop all targets before running out of arrows!</p>
+              </div>
+
+              <div class="about-box">
+                <h4>🎈 Special Balloons</h4>
+                <p>
+                  💣 <strong>Bomb:</strong> Explosive chain reaction pops nearby balloons.<br>
+                  ❄️ <strong>Freeze:</strong> Stasis slows ascending balloons for 5s.<br>
+                  🏹 <strong>Quiver:</strong> Restores +3 arrows to your quiver.<br>
+                  ⭐ <strong>Star:</strong> Grants bonus points and extra coins.
+                </p>
+              </div>
+
+              <div class="about-box">
+                <h4>🔥 Fire Rush & Armory</h4>
+                <p>
+                  Maintain a 4x combo to ignite <strong>Fire Rush</strong> for flaming piercing arrows. Earn coins to unlock elemental bows in the <strong>Armory</strong>!
+                </p>
+              </div>
+
+              <div class="about-footer-text">
+                Built with HTML5 Canvas & Web Audio API &bull; MIT License
+              </div>
+            </div>
+
+            <button class="btn-secondary" id="btn-close-about" style="width: 100%; margin-top: 16px;">
+              Close
+            </button>
           </div>
         </div>
 
