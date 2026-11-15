@@ -148,6 +148,17 @@ canvas {
   letter-spacing: 1px;
 }
 
+.wave-pill { gap: 7px; }
+.wave-val {
+  color: #c084fc;
+  text-shadow: 0 0 14px rgba(192, 132, 252, 0.55);
+}
+.hud-goal {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 /* Wind Indicator */
 .wind-box {
   display: flex;
@@ -231,6 +242,45 @@ canvas {
 
 #powerup-badge.active {
   opacity: 1;
+}
+
+#wave-banner {
+  position: absolute;
+  top: 148px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px) scale(0.96);
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 9px 18px 10px;
+  border: 1px solid rgba(192, 132, 252, 0.5);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(76, 29, 149, 0.9), rgba(30, 41, 59, 0.9));
+  box-shadow: 0 10px 32px rgba(76, 29, 149, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease, transform 0.24s ease;
+  z-index: 15;
+}
+#wave-banner.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+.wave-banner-kicker {
+  color: #c4b5fd;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+#wave-banner-number {
+  color: #fef08a;
+  font-family: 'Fredoka', cursive, sans-serif;
+  font-size: 26px;
+}
+#wave-banner-copy {
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* HUD Buttons */
@@ -734,6 +784,12 @@ canvas {
   }
   .hud-val {
     font-size: 16px;
+  }
+  .hud-goal { display: none; }
+  #wave-banner {
+    top: 112px;
+    max-width: 85%;
+    white-space: nowrap;
   }
   .glass-modal {
     padding: 24px 18px;

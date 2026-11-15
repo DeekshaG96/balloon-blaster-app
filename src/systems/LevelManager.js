@@ -281,8 +281,9 @@ export class LevelManager {
     else if (roll < 0.18) type = 'freeze';
     else if (roll < 0.25) type = 'quiver';
     else if (roll < 0.33) type = 'star';
-    else if (roll < 0.38) type = 'fire_powerup';
-    else if (roll < 0.43) type = 'triple_powerup';
+    else if (roll < 0.37) type = 'rainbow';
+    else if (roll < 0.41) type = 'fire_powerup';
+    else if (roll < 0.45) type = 'triple_powerup';
 
     // Difficulty increases speed gradually
     const baseSpeed = 60 + Math.min(70, Math.floor(currentScore / 300) * 8);

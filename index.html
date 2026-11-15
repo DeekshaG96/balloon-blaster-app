@@ -47,6 +47,11 @@
               <span class="hud-label" id="hud-mode-label">Level</span>
               <span class="hud-val" id="hud-level">1</span>
             </div>
+            <div class="hud-pill wave-pill">
+              <span class="hud-label">Wave</span>
+              <span class="hud-val wave-val" id="hud-wave">—</span>
+              <span class="hud-goal" id="hud-goal">Campaign</span>
+            </div>
 
             <!-- Wind Gauge -->
             <div class="hud-pill wind-box" id="wind-pill">
@@ -84,6 +89,11 @@
             <span id="powerup-name">Fire Arrows</span>
             (<span id="powerup-timer">3</span> shots)
           </div>
+          <div id="wave-banner" aria-live="polite">
+            <span class="wave-banner-kicker">WAVE</span>
+            <strong id="wave-banner-number">1</strong>
+            <span id="wave-banner-copy">Pop 12 balloons to power up</span>
+          </div>
 
           <!-- Aim Helper Toast -->
           <div id="aim-help-toast">
@@ -115,6 +125,10 @@
               <div class="stat-card">
                 <span class="stat-label">Highest Level</span>
                 <span class="stat-num" id="menu-unlocked-level">1 / 10</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Best Wave</span>
+                <span class="stat-num" id="menu-best-wave">0</span>
               </div>
             </div>
 
@@ -170,6 +184,10 @@
                 <p>
                   Maintain a 4x combo to ignite <strong>Fire Rush</strong> for flaming piercing arrows. Earn coins to unlock elemental bows in the <strong>Armory</strong>!
                 </p>
+              </div>
+              <div class="about-box">
+                <h4>🌊 Endless Waves</h4>
+                <p>Every wave rewards precision with extra arrows and tougher balloon patterns. Rainbow balloons trigger a burst of points and a mini refill.</p>
               </div>
 
               <div class="about-footer-text">
@@ -256,6 +274,10 @@
               <div class="stat-card">
                 <span class="stat-label">Best Combo</span>
                 <span class="stat-num" id="game-over-combo">x1</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Wave Reached</span>
+                <span class="stat-num" id="game-over-wave">1</span>
               </div>
             </div>
 
