@@ -45,6 +45,12 @@ class GameApp {
     this.currentPops = 0;
     this.combo = 0;
     this.bestCombo = 0;
+    this.wave = 1;
+    this.wavePops = 0;
+    this.waveTarget = 12;
+    this.waveBannerTimer = null;
+    this.waveModifier = this.getWaveModifier(1);
+    this.coinMultiplier = 1;
 
     // Fire Rush & Slow Mo
     this.isFireRush = false;
@@ -326,6 +332,7 @@ class GameApp {
   updateMenuStats() {
     document.getElementById('menu-highscore').textContent = Storage.getEndlessHighScore().toLocaleString();
     document.getElementById('menu-unlocked-level').textContent = `${Storage.getUnlockedLevel()} / ${this.levels.totalLevels}`;
+    document.getElementById('menu-best-wave').textContent = Storage.getBestWave().toLocaleString();
   }
 
   initInput() {
@@ -440,6 +447,11 @@ class GameApp {
     this.arrowsLeft = config.arrows;
     this.targetPops = config.targetPops;
     this.currentPops = 0;
+    this.wave = 1;
+    this.wavePops = 0;
+    this.waveTarget = 12;
+    this.waveModifier = this.getWaveModifier(1);
+    this.coinMultiplier = this.waveModifier.coinMultiplier;
     this.combo = 0;
     this.isFireRush = false;
     this.activePowerup = null;
@@ -469,6 +481,11 @@ class GameApp {
     this.stageCoinsEarned = 0;
     this.arrowsLeft = 14;
     this.currentPops = 0;
+    this.wave = 1;
+    this.wavePops = 0;
+    this.waveTarget = 12;
+    this.waveModifier = this.getWaveModifier(1);
+    this.coinMultiplier = this.waveModifier.coinMultiplier;
     this.combo = 0;
     this.isFireRush = false;
     this.activePowerup = null;
@@ -487,12 +504,14 @@ class GameApp {
 
     for (let i = 0; i < 12; i++) {
       const b = this.levels.spawnEndlessBalloon(this.width, this.height, 0, true);
+      this.applyEndlessModifier(b);
       this.balloons.push(b);
     }
 
     this.hideAllModals();
     this.state = STATE.PLAYING;
     this.updateHUD();
+    this.showWaveBanner(1, `${this.waveModifier.name} · ${this.waveModifier.description}`);
     sound.startBGM();
   }
 
@@ -548,6 +567,10 @@ class GameApp {
     document.getElementById('hud-arrows').textContent = this.arrowsLeft;
     document.getElementById('hud-score').textContent = this.score.toLocaleString();
     document.getElementById('hud-coins').textContent = Storage.getCoins().toLocaleString();
+    document.getElementById('hud-wave').textContent = this.gameMode === 'endless' ? this.wave : '—';
+    document.getElementById('hud-goal').textContent = this.gameMode === 'endless'
+      ? `${this.wavePops}/${this.waveTarget}`
+      : 'Campaign';
 
     if (this.gameMode === 'campaign') {
       document.getElementById('hud-mode-label').textContent = 'Level';
@@ -581,6 +604,21 @@ class GameApp {
     }
   }
 
+  getWaveModifier(wave) {
+    const modifiers = [
+      { name: 'Calm Skies', description: 'Build your combo safely', speedMultiplier: 1, windRange: 160, coinMultiplier: 1 },
+      { name: 'Crosswind', description: 'Read the gusts before you release', speedMultiplier: 1.05, windRange: 230, coinMultiplier: 1.15 },
+      { name: 'Rush Hour', description: 'Balloons rise faster · freeze is king', speedMultiplier: 1.25, windRange: 170, coinMultiplier: 1.2 },
+      { name: 'Jackpot', description: 'Double coins · chase rainbow balloons', speedMultiplier: 1.1, windRange: 190, coinMultiplier: 2 }
+    ];
+    return modifiers[(wave - 1) % modifiers.length];
+  }
+
+  applyEndlessModifier(balloon) {
+    if (!balloon || this.gameMode !== 'endless') return;
+    balloon.baseSpeed *= this.waveModifier.speedMultiplier;
+  }
+
   triggerCombo(multiplier) {
     const el = document.getElementById('combo-display');
     const numEl = document.getElementById('combo-multiplier');
@@ -607,6 +645,7 @@ class GameApp {
   popBalloon(balloon, hitX, hitY) {
     balloon.isPopped = true;
     this.currentPops++;
+    if (this.gameMode === 'endless') this.wavePops++;
     this.combo++;
     if (this.combo > this.bestCombo) this.bestCombo = this.combo;
 
@@ -620,7 +659,7 @@ class GameApp {
 
     const skin = this.bow.getSkin();
     const coinMult = skin.id === 'celestial' ? 2 : 1;
-    let earnedCoins = (balloon.type === 'star' ? 30 : balloon.type === 'bomb' ? 15 : 10) * coinMult;
+    let earnedCoins = (balloon.type === 'star' ? 30 : balloon.type === 'rainbow' ? 45 : balloon.type === 'bomb' ? 15 : 10) * coinMult * this.coinMultiplier;
     Storage.addCoins(earnedCoins);
     this.stageCoinsEarned += earnedCoins;
 
@@ -665,6 +704,12 @@ class GameApp {
     } else if (balloon.type === 'star') {
       sound.playStarChime();
       this.particles.addFloatingText('STAR BONUS! +300', balloon.x, balloon.y - 35, '#ffd700', 28);
+    } else if (balloon.type === 'rainbow') {
+      sound.playStarChime();
+      this.arrowsLeft += 2;
+      this.combo += 2;
+      this.particles.createConfetti(balloon.x, balloon.y, 22);
+      this.particles.addFloatingText('RAINBOW RUSH! +2 ARROWS', balloon.x, balloon.y - 35, '#f0abfc', 24);
     } else if (balloon.type === 'fire_powerup') {
       sound.playQuiverChime();
       this.activePowerup = 'fire';
@@ -678,7 +723,33 @@ class GameApp {
     }
 
     this.updateHUD();
+    this.checkWaveProgress();
     this.checkVictoryOrDefeat();
+  }
+
+  checkWaveProgress() {
+    if (this.gameMode !== 'endless' || this.wavePops < this.waveTarget) return;
+    this.wave++;
+    this.wavePops = 0;
+    this.waveTarget = 12 + Math.min(12, Math.floor(this.wave / 2) * 2);
+    this.arrowsLeft += 4;
+    this.waveModifier = this.getWaveModifier(this.wave);
+    this.coinMultiplier = this.waveModifier.coinMultiplier;
+    Storage.setBestWave(this.wave);
+    this.achievements.checkWave(this.wave);
+    this.particles.createConfetti(this.width / 2, 170, 35);
+    this.showWaveBanner(this.wave, `${this.waveModifier.name} · ${this.waveModifier.description}`);
+    this.updateHUD();
+  }
+
+  showWaveBanner(wave, copy) {
+    const banner = document.getElementById('wave-banner');
+    if (!banner) return;
+    document.getElementById('wave-banner-number').textContent = wave;
+    document.getElementById('wave-banner-copy').textContent = copy;
+    banner.classList.add('active');
+    if (this.waveBannerTimer) clearTimeout(this.waveBannerTimer);
+    this.waveBannerTimer = setTimeout(() => banner.classList.remove('active'), 2600);
   }
 
   checkVictoryOrDefeat() {
@@ -719,12 +790,14 @@ class GameApp {
     this.state = STATE.GAME_OVER;
     if (this.gameMode === 'endless') {
       Storage.setEndlessHighScore(this.score);
+      Storage.setBestWave(this.wave);
     }
     Storage.setBestCombo(this.bestCombo);
 
     document.getElementById('game-over-reason').textContent = reason;
     document.getElementById('game-over-score').textContent = this.score.toLocaleString();
     document.getElementById('game-over-combo').textContent = `x${this.bestCombo || 1}`;
+    document.getElementById('game-over-wave').textContent = this.wave;
 
     document.getElementById('fire-rush-vignette').classList.remove('active');
     document.getElementById('game-over-modal').classList.remove('hidden');
@@ -778,7 +851,8 @@ class GameApp {
     if (this.windTimer > 8) {
       this.windTimer = 0;
       if (this.gameMode === 'endless') {
-        this.targetWind = (Math.random() - 0.5) * 160;
+        const windRange = this.gameMode === 'endless' ? this.waveModifier.windRange : 160;
+        this.targetWind = (Math.random() - 0.5) * windRange;
       }
     }
     this.windX += (this.targetWind - this.windX) * dt * 2;
@@ -843,7 +917,9 @@ class GameApp {
 
     if (this.gameMode === 'endless') {
       while (this.balloons.length < 12) {
-        this.balloons.push(this.levels.spawnEndlessBalloon(this.width, this.height, this.score, false));
+        const balloon = this.levels.spawnEndlessBalloon(this.width, this.height, this.score, false);
+        this.applyEndlessModifier(balloon);
+        this.balloons.push(balloon);
       }
     }
 

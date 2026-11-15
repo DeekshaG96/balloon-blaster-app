@@ -3,6 +3,7 @@
 export class Storage {
   static KEYS = {
     HIGH_SCORE_ENDLESS: 'arrowpop_endless_highscore',
+    BEST_WAVE: 'arrowpop_best_wave',
     UNLOCKED_LEVEL: 'arrowpop_unlocked_level',
     BEST_COMBO: 'arrowpop_best_combo',
     COINS: 'arrowpop_coins',
@@ -106,6 +107,24 @@ export class Storage {
       const current = this.getEndlessHighScore();
       if (score > current) {
         localStorage.setItem(this.KEYS.HIGH_SCORE_ENDLESS, score.toString());
+        return true;
+      }
+    } catch {}
+    return false;
+  }
+
+  static getBestWave() {
+    try {
+      return parseInt(localStorage.getItem(this.KEYS.BEST_WAVE) || '0', 10);
+    } catch {
+      return 0;
+    }
+  }
+
+  static setBestWave(wave) {
+    try {
+      if (wave > this.getBestWave()) {
+        localStorage.setItem(this.KEYS.BEST_WAVE, wave.toString());
         return true;
       }
     } catch {}

@@ -50,6 +50,13 @@ export const ACHIEVEMENTS = [
     description: 'Unlock and equip a special bow from the Armory.',
     icon: '🏹',
     reward: 250
+  },
+  {
+    id: 'wave_runner',
+    title: 'Wave Runner',
+    description: 'Reach wave 5 in Endless Blitz.',
+    icon: '🌊',
+    reward: 300
   }
 ];
 
@@ -94,6 +101,10 @@ export class AchievementManager {
 
   checkArmory(bowId) {
     if (bowId !== 'oak') this.tryUnlock('armory_collector');
+  }
+
+  checkWave(wave) {
+    if (wave >= 5) this.tryUnlock('wave_runner');
   }
 
   tryUnlock(id) {

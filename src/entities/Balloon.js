@@ -5,7 +5,7 @@ export class Balloon {
     this.x = x;
     this.y = y;
     this.startX = x;
-    this.type = type; // 'normal', 'bomb', 'freeze', 'quiver', 'star', 'fire_powerup', 'triple_powerup'
+    this.type = type; // 'normal', 'bomb', 'freeze', 'quiver', 'star', 'rainbow', 'fire_powerup', 'triple_powerup'
     this.color = color;
     this.baseSpeed = speed;
     this.speed = speed;
@@ -30,6 +30,7 @@ export class Balloon {
       case 'freeze': return 100;
       case 'quiver': return 150;
       case 'star': return 300;
+      case 'rainbow': return 500;
       case 'fire_powerup': return 200;
       case 'triple_powerup': return 200;
       default: return 100;
@@ -85,6 +86,11 @@ export class Balloon {
       grad.addColorStop(0, '#fef08a');
       grad.addColorStop(0.4, '#eab308');
       grad.addColorStop(1, '#ca8a04');
+    } else if (this.type === 'rainbow') {
+      grad.addColorStop(0, '#fef3c7');
+      grad.addColorStop(0.35, '#f472b6');
+      grad.addColorStop(0.7, '#8b5cf6');
+      grad.addColorStop(1, '#06b6d4');
     } else if (this.type === 'fire_powerup') {
       grad.addColorStop(0, '#fed7aa');
       grad.addColorStop(0.4, '#f97316');
@@ -168,6 +174,9 @@ export class Balloon {
     } else if (this.type === 'star') {
       ctx.font = 'bold 18px sans-serif';
       ctx.fillText('⭐', 0, 2);
+    } else if (this.type === 'rainbow') {
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText('🌈', 0, 2);
     } else if (this.type === 'fire_powerup') {
       ctx.font = 'bold 16px sans-serif';
       ctx.fillText('🔥', 0, 2);
